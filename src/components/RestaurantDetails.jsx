@@ -26,16 +26,28 @@ const RestaurantDetails = () => {
 
     const userData = useUserData(id);
 
+    const [expand, setExpand] = useState(false);
 
 
 
     return (
         
-        <div>
-            <h1>Restaurant Details</h1>
-            <h4>User Id: {userData?.userId}</h4>
-            <h4>User Title: {userData?.title}</h4>
-            <h4>User Body: {userData?.body}</h4>
+        <div className=" border w-[600px] gap-4 p-6 bg-red-100">
+            <div className="flex justify-between">
+                <div className="gap-4">
+                    <h1 className="font-bold text-lg">Restaurant Details</h1>
+                    <h4>User Id: {userData?.userId}</h4>
+                    <h4>User Title: {userData?.title}</h4>
+                </div>
+                <div onClick={() => {
+                    setExpand(!expand);
+                }}>{ !expand ? "+" : "-" }</div>
+            </div>
+            { expand && <div>
+                <hr />
+               <h4>User Body: {userData?.body}</h4> 
+            </div> }
+            
         </div>
     )
 };

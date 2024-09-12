@@ -1,4 +1,4 @@
-import RestaurantCardComponent from "./RestaurantCardComponent";
+import RestaurantCardComponent, { withPromotion } from "./RestaurantCardComponent";
 import resDataList from "./../utils/mockData";
 import { useState, useEffect } from "react";
 import Shimmer from "./Shimmer";
@@ -39,6 +39,10 @@ const BodyComponent = () => {
       id: 4,
     },
   ];
+
+
+  //---------use higher order component---------
+  const RestaurantCardPromoted = withPromotion(RestaurantCardComponent);
 
   //----------use online custom hook---------
   const isOnline = useOnlineStatus();
@@ -88,9 +92,9 @@ const BodyComponent = () => {
     <Shimmer />
   ) : (
     <div className="body-container">
-      <div className="filter">
-        <div className="search">
-          <input
+      <div className="filter flex gap-5">
+        <div className="search flex gap-5">
+          <input className="px-4 py-2"
             type="text"
             placeholder="Search for restaurants"
             value={searchValue}
@@ -99,7 +103,7 @@ const BodyComponent = () => {
               //console.log(searchValue);
             }}
           />
-          <button
+          <button className="px-4 py-2 bg-green-100 rounded-lg"
             onClick={() => {
               const serachedList = listOfRestaurants.filter((res) => {
                 return res.title
@@ -114,7 +118,7 @@ const BodyComponent = () => {
         </div>
 
         <button
-          className="filter-btn"
+          className="filter-btn px-4 py-2 bg-green-100 rounded-lg"
           style={{ cursor: "pointer" }}
           onClick={() => {
             setListOfRestaurants(
@@ -128,7 +132,7 @@ const BodyComponent = () => {
         </button>
 
         <button
-          className="filter-btn"
+          className="filter-btn px-4 py-2 bg-green-100 rounded-lg"
           style={{ cursor: "pointer" }}
           onClick={() => {
             setFilteredListOfRestaurants(listOfRestaurants);
@@ -137,9 +141,14 @@ const BodyComponent = () => {
           Reset
         </button>
       </div>
-      <div className="restaurant-container">
+      <div className="restaurant-container flex flex-wrap">
         {filteredListOfRestaurants.map((restaurant) => (
-          <Link to={"/restaurants/" + restaurant.id} key={restaurant.id} ><RestaurantCardComponent resData={restaurant} /></Link>
+          <Link to={"/restaurants/" + restaurant.id} key={restaurant.id} >
+
+            { 
+            true ? (<RestaurantCardPromoted resData={restaurant} />) :
+            ( <RestaurantCardComponent resData={restaurant} /> ) }
+            </Link>
         ))}
       </div>
     </div>

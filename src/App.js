@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState} from "react";
 import ReactDOM from "react-dom/client";
 import HeaderComponent from "./components/HeaderComponent";
 import BodyComponent from "./components/BodyComponent";
@@ -8,6 +8,8 @@ import Contact from "./components/Contact";
 import Error from "./components/Error";
 import RestaurantDetails from "./components/RestaurantDetails";
 import { lazy } from "react";
+import UserContext from "./utils/UserContext";
+import Solutions from "./components/Solutions";
 //import Glossary from "./components/Glossary";
 
 /* 
@@ -32,26 +34,32 @@ import { lazy } from "react";
  - Contact
 */
 
+//---------------------Lazy loading-------------------
+const Glossary = React.lazy(() => import("./components/Glossary"));
 
-
-//---------------------Lazy loading-------------------  
-const Glossary = React.lazy(() => import("./components/Glossary")); 
-
-
-
+//now suppose we have authontication logic that sets up user name in the context
 
 const AppLayout = () => {
-    return (
-        <div className="app">
-            {/* Header */}
-            <HeaderComponent />
-            {/* Body */}
-            {/* <BodyComponent /> */}
+  const [userName, setUserName] = useState();
 
-            <Outlet />
-           
-        </div>   
-    )
+  useEffect(() => {
+    //make an api call to get the user name
+    const data = { name: "John Doe" };
+    setUserName(data.name);
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ loggedInUser: userName }}>
+      <div className="app">
+        {/* Header */}
+        <HeaderComponent />
+        {/* Body */}
+        {/* <BodyComponent /> */}
+
+        <Outlet />
+      </div>
+      </UserContext.Provider>
+  );
 };
 
 const appRouter = createBrowserRouter([
@@ -69,97 +77,42 @@ const appRouter = createBrowserRouter([
       },
       {
         path: "/contact",
-        element: <Contact />
+        element: <Contact />,
       },
-      { 
+      {
         path: "/about",
-        element: <About />
+        element: <About />,
       },
       {
         path: "/restaurants/:id",
-        element: <RestaurantDetails />
+        element: <RestaurantDetails />,
       },
       {
         path: "/glossary",
-        element: <Suspense fallback={<h1>loading......</h1>} >
-                    <Glossary />
-                </Suspense>
+        element: (
+          <Suspense fallback={<h1>loading......</h1>}>
+            <Glossary />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/solutions",
+        element: <Solutions />,
       }
-
     ],
-    errorElement: <Error />
+    errorElement: <Error />,
   },
- 
+
   // {
   //   path: "/contact",
   //   element: Contact
   // }
 ]);
 
-const root  = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //root.render(<AppLayout />);
 
 //------use router provider to provide the router to the app
 
-root.render(<RouterProvider router = { appRouter } />);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+root.render(<RouterProvider router={appRouter} />);
